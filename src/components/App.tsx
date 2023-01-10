@@ -10,16 +10,12 @@ export interface AppRouterProps {
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState<User | null>(null);
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        setIsLoggedIn(true);
         setUserObj(user);
         console.log(user);
-      } else {
-        setIsLoggedIn(false);
       }
       setInit(true);
     });
@@ -27,7 +23,7 @@ function App() {
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} />
+        <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj} />
       ) : (
         'initialing...'
       )}

@@ -7,8 +7,14 @@ import {
   query,
 } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
+import Tweety from '../components/Tweety';
+import { User } from 'firebase/auth';
 
-const Home = ({ userObj }) => {
+interface IHome {
+  userObj: User;
+}
+
+const Home = ({ userObj }: IHome) => {
   const [nweet, setNweet] = useState('');
   const [nweets, setNweets] = useState([]);
 
@@ -44,6 +50,17 @@ const Home = ({ userObj }) => {
     setNweet(value);
   };
 
+  const onFileChange = (event: React.FormEvent<HTMLInputElement>) => {
+    const {
+      currentTarget: { files },
+    } = event;
+    const theFile = files[0];
+    const reader = new FileReader();
+    reader.onload = (finihedEvent) => {
+      console.log(finihedEvent);
+    };
+    reader.readAsDataURL(theFile);
+  };
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -54,13 +71,16 @@ const Home = ({ userObj }) => {
           placeholder="What's on Your mind?"
           maxLength={120}
         />
+        <input type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="Twitty!" />
       </form>
       <div>
-        {nweets.map((tweet) => (
-          <div key={tweet.id}>
-            <h4>{tweet.text}</h4>
-          </div>
+        {nweets.map((nweet) => (
+          <Tweety
+            key={nweet.id}
+            nweet={nweet}
+            isOwner={nweet.creatorId === userObj.uid}
+          />
         ))}
       </div>
     </div>
