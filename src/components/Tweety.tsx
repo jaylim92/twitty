@@ -1,6 +1,7 @@
-import { dbService } from '../fBase';
+import { dbService, storageService } from '../fBase';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
+import { deleteObject, ref } from 'firebase/storage';
 
 interface ITweety {
   nweet: INweet;
@@ -12,6 +13,7 @@ interface INweet {
   createAt: number;
   creatorId: string;
   id: number;
+  fileUrl: string;
 }
 
 const Tweety = ({ nweet, isOwner }: ITweety) => {
@@ -22,6 +24,7 @@ const Tweety = ({ nweet, isOwner }: ITweety) => {
     if (ok) {
       // Delete Tweety
       await deleteDoc(doc(dbService, 'twitty', `${nweet.id}`));
+      await deleteObject(ref(dbService, nweet.fileUrl));
     }
   };
   const toggleEditText = () => setEditText((prev) => !prev);
@@ -40,6 +43,7 @@ const Tweety = ({ nweet, isOwner }: ITweety) => {
   };
   return (
     <>
+      <img src={nweet.fileUrl} alt="image" />
       <h4>{nweet.text}</h4>
       {editText ? (
         <>

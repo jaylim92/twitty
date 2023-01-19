@@ -44,15 +44,21 @@ const Home = ({ userObj }: IHome) => {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const storageRef = ref(storageService, `${userObj.uid}/${uuid()}`);
-    const response = await uploadString(storageRef, file, 'data_url');
-    const fileUrl = await getDownloadURL(response.ref);
-    await addDoc(collection(dbService, 'twitty'), {
+    let fileUrl = '';
+    if (fileUrl !== '') {
+      const storageRef = ref(storageService, `${userObj.uid}/${uuid()}`);
+      const response = await uploadString(storageRef, file, 'data_url');
+      fileUrl = await getDownloadURL(response.ref);
+    }
+
+    const tweetyObj = {
       text: nweet,
       createAt: Date.now(),
       creatorId: userObj.uid,
       fileUrl,
-    });
+    };
+
+    await addDoc(collection(dbService, 'twitty'), tweetyObj);
     setNweet('');
     setFile('');
   };
@@ -76,10 +82,12 @@ const Home = ({ userObj }: IHome) => {
     };
     reader.readAsDataURL(theFile);
   };
+
   const onClearFile = () => {
     setFile(null);
     fileInput.current.value = null;
   };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
