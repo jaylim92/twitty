@@ -18,7 +18,7 @@ import {
 } from 'firebase/storage';
 import { v4 as uuid } from 'uuid';
 
-interface IHome {
+export interface IHome {
   userObj: User;
 }
 

@@ -24,7 +24,7 @@ const Tweety = ({ nweet, isOwner }: ITweety) => {
     if (ok) {
       // Delete Tweety
       await deleteDoc(doc(dbService, 'twitty', `${nweet.id}`));
-      await deleteObject(ref(dbService, nweet.fileUrl));
+      await deleteObject(ref(storageService, nweet.fileUrl));
     }
   };
   const toggleEditText = () => setEditText((prev) => !prev);
@@ -43,7 +43,7 @@ const Tweety = ({ nweet, isOwner }: ITweety) => {
   };
   return (
     <>
-      <img src={nweet.fileUrl} alt="image" />
+      {nweet.fileUrl ? <img src={nweet.fileUrl} alt="image" /> : null}
       <h4>{nweet.text}</h4>
       {editText ? (
         <>
