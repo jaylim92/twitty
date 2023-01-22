@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import AppRouter from './Router';
 import { auth } from '../fBase';
-import { NextOrObserver, User } from 'firebase/auth';
+import { User, updateCurrentUser } from 'firebase/auth';
 
 export interface AppRouterProps {
   isLoggedIn: boolean;
   userObj: User;
+  refreshUser: () => void;
 }
 
 function App() {
@@ -20,10 +21,20 @@ function App() {
       setInit(true);
     });
   }, []);
+
+  const refreshUser = async () => {
+    await updateCurrentUser(auth, auth.currentUser);
+    setUserObj(auth.currentUser);
+  };
+
   return (
     <>
       {init ? (
-        <AppRouter isLoggedIn={Boolean(userObj)} userObj={userObj} />
+        <AppRouter
+          refreshUser={refreshUser}
+          isLoggedIn={Boolean(userObj)}
+          userObj={userObj}
+        />
       ) : (
         'initialing...'
       )}

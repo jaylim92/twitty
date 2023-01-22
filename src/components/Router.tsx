@@ -6,15 +6,18 @@ import Home from '../routes/Home';
 import Navigation from './Navigation';
 import { AppRouterProps } from './App';
 
-const AppRouter = ({ isLoggedIn, userObj }: AppRouterProps) => {
+const AppRouter = ({ isLoggedIn, userObj, refreshUser }: AppRouterProps) => {
   return (
     <Router>
-      {isLoggedIn && <Navigation />}
+      {isLoggedIn && <Navigation userObj={userObj} />}
       <Routes>
         {isLoggedIn ? (
           <>
             <Route path="/" element={<Home userObj={userObj} />} />
-            <Route path="/profile" element={<Profile userObj={userObj} />} />
+            <Route
+              path="/profile"
+              element={<Profile refreshUser={refreshUser} userObj={userObj} />}
+            />
           </>
         ) : (
           <Route path="/" element={<Auth />} />

@@ -9,13 +9,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import Tweety from '../components/Tweety';
 import { User } from 'firebase/auth';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytes,
-  uploadString,
-} from 'firebase/storage';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { v4 as uuid } from 'uuid';
 
 export interface IHome {
@@ -25,7 +19,7 @@ export interface IHome {
 const Home = ({ userObj }: IHome) => {
   const [nweet, setNweet] = useState('');
   const [nweets, setNweets] = useState([]);
-  const [file, setFile] = useState('');
+  const [file, setFile] = useState<string>('');
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
