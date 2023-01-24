@@ -17,6 +17,8 @@ function App() {
       if (user) {
         setUserObj(user);
         console.log(user);
+      } else {
+        setUserObj(null);
       }
       setInit(true);
     });

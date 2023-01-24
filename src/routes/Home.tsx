@@ -1,26 +1,16 @@
-import { dbService, storageService } from '../fBase';
-import {
-  addDoc,
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-} from 'firebase/firestore';
-import React, { useEffect, useRef, useState } from 'react';
+import { dbService } from '../fBase';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import Tweety from '../components/Tweety';
 import { User } from 'firebase/auth';
-import { getDownloadURL, ref, uploadString } from 'firebase/storage';
-import { v4 as uuid } from 'uuid';
+import TweetyFactory from '../components/TweetFactory';
 
 export interface IHome {
   userObj: User;
 }
 
 const Home = ({ userObj }: IHome) => {
-  const [nweet, setNweet] = useState('');
   const [nweets, setNweets] = useState([]);
-  const [file, setFile] = useState<string>('');
-  const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const q = query(
@@ -36,76 +26,9 @@ const Home = ({ userObj }: IHome) => {
     });
   }, []);
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    let fileUrl = '';
-    if (fileUrl !== '') {
-      const storageRef = ref(storageService, `${userObj.uid}/${uuid()}`);
-      const response = await uploadString(storageRef, file, 'data_url');
-      fileUrl = await getDownloadURL(response.ref);
-    }
-
-    const tweetyObj = {
-      text: nweet,
-      createAt: Date.now(),
-      creatorId: userObj.uid,
-      fileUrl,
-    };
-
-    await addDoc(collection(dbService, 'twitty'), tweetyObj);
-    setNweet('');
-    setFile('');
-  };
-
-  const onChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { value },
-    } = event;
-
-    setNweet(value);
-  };
-
-  const onFileChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const {
-      currentTarget: { files },
-    } = event;
-    const theFile = files[0];
-    const reader = new FileReader();
-    reader.onload = () => {
-      setFile(reader.result);
-    };
-    reader.readAsDataURL(theFile);
-  };
-
-  const onClearFile = () => {
-    setFile(null);
-    fileInput.current.value = null;
-  };
-
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <input
-          value={nweet}
-          onChange={onChange}
-          type="text"
-          placeholder="What's on Your mind?"
-          maxLength={120}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-          ref={fileInput}
-        />
-        <input type="submit" value="Twitty!" />
-        {file && (
-          <div>
-            <img src={file} width="150px" height="150px" />
-            <button onClick={onClearFile}>Clear</button>
-          </div>
-        )}
-      </form>
+      <TweetyFactory userObj={userObj} />
       <div>
         {nweets.map((nweet) => (
           <Tweety
